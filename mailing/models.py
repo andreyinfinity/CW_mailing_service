@@ -16,6 +16,14 @@ class Mail(models.Model):
     title = models.CharField(max_length=200, verbose_name='тема письма')
     body = models.TextField(verbose_name='текст письма')
 
+    class Meta:
+        verbose_name = 'письмо'
+        verbose_name_plural = 'письма'
+        ordering = ('-pk',)
+
+    def __str__(self):
+        return self.title
+
 
 class Mailing(models.Model):
     """Рассылка"""
