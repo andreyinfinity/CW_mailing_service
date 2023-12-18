@@ -1,10 +1,12 @@
 from django.urls import path
 
-from home.apps import HomeConfig
-from home.views import IndexView
+from user.apps import UserConfig
+from user.views import login, logout, registration
 
-app_name = HomeConfig.name
+app_name = UserConfig.name
 
 urlpatterns = [
-    path('', IndexView.as_view(), name='index'),
+    path('login/', login, name='login'),
+    path('logout/', logout, name='logout'),
+    path('registration/', registration, name='registration'),
 ]

@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-	<meta charset="UTF-8">
-	<title>Mailing Service</title>
-	{% load static %}
-	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css">
-</head>
-<body>
-<div class="h1 text-primary">
+{% extends 'home/base.html' %}
+{% block content %}
+<div class="h1">
 	Добро пожаловать в сервис рассылки
 </div>
-</body>
-</html>
+{% endblock %}
