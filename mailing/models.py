@@ -30,7 +30,6 @@ class Mailing(models.Model):
     name = models.CharField(max_length=50, verbose_name='название', default='рассылка')
     create_date = models.DateField(auto_now_add=True, verbose_name='дата создания')
     send_date = models.DateField(default=create_date, verbose_name='дата отправления')
-    time = models.TimeField(verbose_name='время')
     period = models.CharField(max_length=50, choices=PERIOD_CHOICES, default='none', verbose_name='периодичность')
     repetitions = models.SmallIntegerField(verbose_name='количество повторений', default=1)
     status = models.CharField(max_length=50, default='created', verbose_name='статус')
