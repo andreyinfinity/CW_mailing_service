@@ -2,12 +2,12 @@
 {% block content %}
 <div class="d-flex flex-row align-items-center justify-content-between py-3">
     <div class="h1">
-		Мои письма
+		Мои рассылки
 	</div>
 	<div class="mb-3 mb-md-0 d-flex text-nowrap">
 		<a class="btn btn-outline-primary"
-		   href="{% url 'mailing:create' %}" title="Создать новое письмо">
-			Создать письмо
+		   href="{% url 'mailing:create_mailing' %}" title="Добавить новую рассылку">
+			Добавить рассылку
 		</a>
 	</div>
 </div>
@@ -15,18 +15,27 @@
 	<table class="table">
 		<thead>
 			<tr>
-				<th scope="col">Заголовок</th>
-				<th scope="col">Сообщение</th>
+				<th scope="col">Название</th>
+				<th scope="col">Дата создания</th>
+				<th scope="col">Дата отправки</th>
+				<th scope="col">Периодичность</th>
+				<th scope="col">Кол-во повторений</th>
+				<th scope="col">Статус</th>
 				<th scope="col" class="text-end">Управление</th>
 			</tr>
 		</thead>
 		<tbody>
 		{% for object in object_list %}
 		<tr>
-			<td>{{ object.title|slice:":20" }}</td>
-			<td>{{ object.body|slice:":80" }}</td>
+			<td>{{ object.name }}</td>
+			<td>{{ object.create_date }}</td>
+			<td>{{ object.send_date }}</td>
+			<td>{{ object.period }}</td>
+			<td>{{ object.repetitions }}</td>
+			<td>{{ object.status }}</td>
 			<td class="text-end">
 				<div class="btn-group">
+
 					<a class="btn btn-sm btn-outline-primary"
 					   href="{% url 'mailing:edit' object.pk %}" title="Редактировать клиента">
 						Редактировать

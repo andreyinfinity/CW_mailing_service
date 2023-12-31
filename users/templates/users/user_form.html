@@ -1,0 +1,45 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<div class="row">
+	<h2>Профиль</h2>
+	<div class="col-6">
+		<img class="img-fluid" src="{{ user.image.url }}" alt="{{ user.image.first_name }}">
+	</div>
+	<div class="col-6">
+		<form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+
+            {% for field in form.visible_fields %}
+				{% if not field.name == 'image' %}
+                <div class="form-group mb-3 form-floating">
+                    {{ field }}
+                    {{ field.label_tag }}
+					<div class="form-text">
+						{{ field.help_text }}
+					</div>
+					{% if field.errors %}
+					<div class="alert alert-danger mt-1" role="alert">
+						{% for error in field.errors %}
+							{{ error }}
+						{% endfor %}
+					</div>
+					{% endif %}
+                 </div>
+				{% else %}
+				<div class="form-group mb-3">
+                    {{ field.label_tag }}
+					{{ field }}
+                 </div>
+				{% endif %}
+            {% endfor %}
+            <input type="submit" value="Обновить профиль" class="btn btn-success mt-4">
+        </form>
+	</div>
+</div>
+{% endblock %}

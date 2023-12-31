@@ -1,3 +1,13 @@
 from django.contrib import admin
 
-# Register your models here.
+from mailing.models import Mail, Mailing
+
+
+@admin.register(Mail)
+class MailAdmin(admin.ModelAdmin):
+    list_display = ['title', 'body']
+
+
+@admin.register(Mailing)
+class MailingAdmin(admin.ModelAdmin):
+    list_display = ['name']

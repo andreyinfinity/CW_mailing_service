@@ -13,7 +13,7 @@ from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 import os
 
-
+# Загрузка переменных окружения
 if not find_dotenv():
     print("Переменные окружения не загружены, отсутствует файл .env")
 else:
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mailing',
     'home',
-    'user',
+    'users',
     'customer',
 ]
 
@@ -138,7 +138,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Users
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = 'home:index'
+LOGOUT_REDIRECT_URL = 'users:login'
+LOGIN_URL = 'users:login'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'

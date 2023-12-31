@@ -1,10 +1,33 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
 from customer.models import Customer
 
 
-class CustomerForm(forms.ModelForm):
+class StyleFormMixin:
+    """Миксин для применения стилей к полям формы"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+            # if field.widget.input_type == 'text':
+            #     field.widget.attrs['class'] = 'form-control'
+            #     field.widget.attrs['placeholder'] = field.label
+            # elif field.widget.input_type == 'email':
+            #     field.widget.attrs['class'] = 'form-control'
+            #     field.widget.attrs['placeholder'] = field.label
+            # elif field.widget.input_type == 'password':
+            #     field.widget.attrs['class'] = 'form-control'
+            #     field.widget.attrs['placeholder'] = field.label
+            # elif field.widget.input_type == 'select':
+            #     field.widget.attrs['class'] = 'form-select'
+            # elif field.widget.input_type == 'number':
+            #     field.widget.attrs['class'] = 'form-control'
+            # elif field.widget.input_type == 'file':
+            #     field.widget.attrs['class'] = 'form-control'
+
+
+class CustomerForm(StyleFormMixin, forms.ModelForm):
     """Форма добавления и редактирования клиентов"""
     def __init__(self, *args, **kwargs):
         """Передача user для проверки на уникальность email клиента текущего пользователя"""
@@ -14,12 +37,6 @@ class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['email', 'first_name', 'last_name']
-        # Добавление классов к тегам для использования стилей CSS
-        widgets = {
-            'first_name': forms.TextInput(attrs={"class": "form-control my-2", "placeholder": "Имя"}),
-            'last_name': forms.TextInput(attrs={"class": "form-control my-2", "placeholder": "Фамилия"}),
-            'email': forms.EmailInput(attrs={"class": "form-control my-2", "placeholder": "e@mail.ru"}),
-        }
 
     def clean(self):
         """Метод проверки уникальности email после валидации формы,

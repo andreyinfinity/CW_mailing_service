@@ -1,5 +1,5 @@
 from django.db import models
-from user.models import User
+from users.models import User
 
 
 class Customer(models.Model):
@@ -15,9 +15,7 @@ class Customer(models.Model):
         return f'{self.last_name} {self.first_name}: {self.email}'
 
     class Meta:
-        constraints = (models.UniqueConstraint(
-                fields=('email', 'user'),
-                name='user_customer_email_unique'),)
+        unique_together = [['email', 'user']]
         verbose_name = 'клиент'
         verbose_name_plural = 'клиенты'
         ordering = ('-pk',)

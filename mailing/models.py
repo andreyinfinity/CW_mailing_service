@@ -1,6 +1,7 @@
 from django.db import models
+from django.utils import timezone
 from customer.models import Customer
-from user.models import User
+from users.models import User
 
 PERIOD_CHOICES = (
     ('none', 'не повторять'),
@@ -15,6 +16,7 @@ class Mail(models.Model):
     """Письмо"""
     title = models.CharField(max_length=200, verbose_name='тема письма')
     body = models.TextField(verbose_name='текст письма')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
 
     class Meta:
         verbose_name = 'письмо'
@@ -28,8 +30,8 @@ class Mail(models.Model):
 class Mailing(models.Model):
     """Рассылка"""
     name = models.CharField(max_length=50, verbose_name='название', default='рассылка')
-    create_date = models.DateField(auto_now_add=True, verbose_name='дата создания')
-    send_date = models.DateField(default=create_date, verbose_name='дата отправления')
+    create_date = models.DateTimeField(auto_now_add=True, verbose_name='дата создания')
+    send_date = models.DateTimeField(default=timezone.now, verbose_name='дата отправления')
     period = models.CharField(max_length=50, choices=PERIOD_CHOICES, default='none', verbose_name='периодичность')
     repetitions = models.SmallIntegerField(verbose_name='количество повторений', default=1)
     status = models.CharField(max_length=50, default='created', verbose_name='статус')
