@@ -16,10 +16,9 @@
 		<thead>
 			<tr>
 				<th scope="col">Название</th>
-				<th scope="col">Дата создания</th>
-				<th scope="col">Дата отправки</th>
+				<th scope="col">Начало рассылки</th>
+				<th scope="col">Следующее отправление</th>
 				<th scope="col">Периодичность</th>
-				<th scope="col">Кол-во повторений</th>
 				<th scope="col">Статус</th>
 				<th scope="col" class="text-end">Управление</th>
 			</tr>
@@ -28,20 +27,19 @@
 		{% for object in object_list %}
 		<tr>
 			<td>{{ object.name }}</td>
-			<td>{{ object.create_date }}</td>
 			<td>{{ object.send_date }}</td>
+			<td>{{ object.next_date }}</td>
 			<td>{{ object.period }}</td>
-			<td>{{ object.repetitions }}</td>
 			<td>{{ object.status }}</td>
 			<td class="text-end">
 				<div class="btn-group">
 
 					<a class="btn btn-sm btn-outline-primary"
-					   href="{% url 'mailing:edit' object.pk %}" title="Редактировать клиента">
+					   href="{% url 'mailing:edit_mailing' object.pk %}" title="Редактировать рассылку">
 						Редактировать
 					</a>
 					<a class="btn btn-sm btn-outline-primary"
-					   href="{% url 'mailing:delete' object.pk %}" title="Удалить клиента">
+					   href="{% url 'mailing:delete_mailing' object.pk %}" title="Удалить рассылку">
 						Удалить
 					</a>
 				</div>

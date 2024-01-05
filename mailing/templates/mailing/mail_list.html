@@ -23,16 +23,16 @@
 		<tbody>
 		{% for object in object_list %}
 		<tr>
-			<td>{{ object.title|slice:":20" }}</td>
+			<td>{{ object.title|slice:":25" }}</td>
 			<td>{{ object.body|slice:":80" }}</td>
 			<td class="text-end">
 				<div class="btn-group">
 					<a class="btn btn-sm btn-outline-primary"
-					   href="{% url 'mailing:edit' object.pk %}" title="Редактировать клиента">
+					   href="{% url 'mailing:edit' object.pk %}" title="Редактировать письмо">
 						Редактировать
 					</a>
 					<a class="btn btn-sm btn-outline-primary"
-					   href="{% url 'mailing:delete' object.pk %}" title="Удалить клиента">
+					   href="{% url 'mailing:delete' object.pk %}" title="Удалить письмо">
 						Удалить
 					</a>
 				</div>

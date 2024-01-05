@@ -1,15 +1,21 @@
 from django.db import models
 from django.utils import timezone
 from customer.models import Customer
-from users.models import User
+from users.models import User, NULLABLE
 
 PERIOD_CHOICES = (
-    ('none', 'не повторять'),
+    ('onetime', 'один раз'),
     ('daily', 'ежедневно'),
     ('weekly', 'еженедельно'),
-    ('monthly', 'ежемесячно')
+    ('monthly', 'ежемесячно'),
 )
-STATUS_CHOICES = ('created', 'begin', 'end')
+STATUS_CHOICES = (
+    ('created', 'created'),
+    ('in progress', 'in progress'),
+    ('sending', 'sending'),
+    ('stopped', 'stopped'),
+    ('completed', 'completed')
+)
 
 
 class Mail(models.Model):
@@ -31,10 +37,10 @@ class Mailing(models.Model):
     """Рассылка"""
     name = models.CharField(max_length=50, verbose_name='название', default='рассылка')
     create_date = models.DateTimeField(auto_now_add=True, verbose_name='дата создания')
-    send_date = models.DateTimeField(default=timezone.now, verbose_name='дата отправления')
+    send_date = models.DateTimeField(default=timezone.now, verbose_name='дата начала рассылки')
+    next_date = models.DateTimeField(verbose_name='дата следующего отправления', **NULLABLE)
     period = models.CharField(max_length=50, choices=PERIOD_CHOICES, default='none', verbose_name='периодичность')
-    repetitions = models.SmallIntegerField(verbose_name='количество повторений', default=1)
-    status = models.CharField(max_length=50, default='created', verbose_name='статус')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='created', verbose_name='статус')
     customers = models.ManyToManyField(Customer, verbose_name='клиенты пользователя')
     mail = models.ForeignKey(Mail, on_delete=models.CASCADE, verbose_name='письмо')
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')

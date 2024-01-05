@@ -25,7 +25,7 @@
 		{% for object in object_list %}
 		<tr>
 			<td {% if not object.is_subscribe %} class="text-secondary" {% endif %}>
-				{{ object.first_name }} {{ object.last_name|default_if_none:"" }}
+				{{ object.first_name|default_if_none:"" }} {{ object.last_name|default_if_none:"" }}
 			</td>
 			<td {% if not object.is_subscribe %} class="text-secondary" {% endif %}>
 				{{ object.email }}

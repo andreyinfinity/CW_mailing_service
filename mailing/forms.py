@@ -1,25 +1,25 @@
 from django import forms
-
+from customer.forms import StyleFormMixin
 from mailing.models import Mailing, Mail
-
-
-class StyleFormMixin:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control'
 
 
 class MailingForm(StyleFormMixin, forms.ModelForm):
     """Форма добавления и редактирования рассылок"""
+    def __init__(self, *args, **kwargs):
+        """Для выбора писем только текущего пользователя"""
+        user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+        self.fields['mail'].queryset = Mail.objects.filter(user=user)
+
     class Meta:
         model = Mailing
-        fields = ['name', 'send_date', 'repetitions',
+        fields = ['name', 'send_date',
                   'period', 'mail']
-        widgets = {'send_date': forms.DateTimeInput(attrs={'type': 'datetime-local'})}
+        widgets = {'send_date': forms.DateTimeInput(attrs={'type': 'datetime'})}
 
 
 class MailForm(StyleFormMixin, forms.ModelForm):
+    """Форма добавления и редактирования письма"""
     class Meta:
         model = Mail
         fields = ['title', 'body']

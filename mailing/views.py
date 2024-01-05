@@ -54,9 +54,17 @@ class MailingCreateView(generic.CreateView):
     form_class = MailingForm
     success_url = reverse_lazy('mailing:mailings')
 
+    def get_form_kwargs(self):
+        """Передача текущего пользователя в kwargs для использования в форме"""
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
     def form_valid(self, form):
-        """Добавление текущего пользователя в форму"""
+        """Добавление пользователя и списка активных
+        клиентов пользователя в рассылку"""
         form.instance.user = self.request.user
+        form.instance.next_date = form.cleaned_data.get('send_date')
         form.save()
         customers = Customer.objects.filter(user=self.request.user).filter(is_subscribe=True)
         form.instance.customers.set(customers)
@@ -68,6 +76,21 @@ class MailingUpdateView(generic.UpdateView):
     model = Mailing
     form_class = MailingForm
     success_url = reverse_lazy('mailing:mailings')
+
+    def get_form_kwargs(self):
+        """Передача текущего пользователя в kwargs для использования в форме"""
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def form_valid(self, form):
+        """Добавление списка активных
+        клиентов пользователя в рассылку"""
+        form.instance.next_date = form.cleaned_data.get('send_date')
+        form.save()
+        customers = Customer.objects.filter(user=self.request.user).filter(is_subscribe=True)
+        form.instance.customers.set(customers)
+        return super().form_valid(form)
 
 
 class MailingDeleteView(generic.DeleteView):
