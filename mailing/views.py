@@ -1,4 +1,8 @@
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.datetime_safe import datetime
 from django.views import generic
 from customer.models import Customer
 from mailing.forms import MailingForm, MailForm
@@ -98,3 +102,24 @@ class MailingDeleteView(generic.DeleteView):
     model = Mailing
     success_url = reverse_lazy('mailing:mailings')
 
+
+def toggle_status(request, pk):
+    """Контроллер изменения состояния рассылки"""
+    mailing = get_object_or_404(Mailing, pk=pk)
+    if mailing.status in ['in progress', 'created']:
+        mailing.status = 'stopped'
+        messages.warning(request=request,
+                         message=f'Рассылка {mailing.name} прекращена')
+    elif mailing.status == 'stopped':
+        mailing.status = 'in progress'
+        if mailing.next_date < datetime.now(timezone.utc):
+            mailing.next_date = datetime.now(timezone.utc)
+        messages.success(request=request,
+                         message=f'Рассылка {mailing.name} продолжит свою работу')
+    elif mailing.status == 'completed':
+        mailing.status = 'created'
+        mailing.next_date = datetime.now(timezone.utc)
+        messages.success(request=request,
+                         message=f'Рассылка {mailing.name} будет разослана повторно')
+    mailing.save()
+    return redirect(reverse_lazy('mailing:mailings'))

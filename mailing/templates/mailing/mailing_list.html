@@ -33,7 +33,22 @@
 			<td>{{ object.status }}</td>
 			<td class="text-end">
 				<div class="btn-group">
-
+					{% if object.status == 'in progress' or object.status == 'created' %}
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:toggle_status' object.pk %}" title="Редактировать рассылку">
+						Остановить
+					</a>
+					{% elif object.status == 'stopped' %}
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:toggle_status' object.pk %}" title="Редактировать рассылку">
+						Возобновить
+					</a>
+					{% elif object.status == 'completed' %}
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:toggle_status' object.pk %}" title="Редактировать рассылку">
+						Повторить
+					</a>
+					{% endif %}
 					<a class="btn btn-sm btn-outline-primary"
 					   href="{% url 'mailing:edit_mailing' object.pk %}" title="Редактировать рассылку">
 						Редактировать

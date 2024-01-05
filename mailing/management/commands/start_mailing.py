@@ -25,9 +25,8 @@ class Command(BaseCommand):
             next_date__lte=datetime.now(timezone.utc)).
          update(status='sending'))
         mailings = Mailing.objects.filter(status='sending')
-        print(mailings)
+
         for mailing in mailings:
-            print(mailing)
             self.send_mail(mailing)
             if mailing.period == 'onetime':
                 mailing.next_date = None
