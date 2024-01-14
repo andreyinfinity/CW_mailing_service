@@ -20,3 +20,8 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    class Meta:
+        permissions = [
+            ('set_user_active', 'активация/деактивация пользователя'),
+            ('view_all_users', 'просмотр всех пользователей')
+        ]

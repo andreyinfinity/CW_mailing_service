@@ -49,6 +49,10 @@ class Mailing(models.Model):
         verbose_name = 'рассылка'
         verbose_name_plural = 'рассылки'
         ordering = ('-pk',)
+        permissions = [
+            ('set_mailing_status', 'изменение статуса рассылки'),
+            ('view_all_mailings', 'просмотр рассылок всех пользователей')
+        ]
 
     def __str__(self):
         return f'{self.mail}, {self.send_date}'
