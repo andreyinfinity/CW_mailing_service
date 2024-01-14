@@ -1,22 +1,24 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import IntegrityError
+from django.db import DatabaseError
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
-
 from customer.forms import CustomerForm
 from customer.models import Customer
+from customer.permissions import OwnerPermissionsMixin
 
 
 class CustomerView(LoginRequiredMixin, generic.ListView):
     """Контроллер списка клиентов. Если пользователь не авторизован,
     то переход на страницу авторизации."""
     login_url = 'users:login'
+    model = Customer
 
     def get_queryset(self):
-        """Метод для вывода клиентов текущего пользователя"""
-        return Customer.objects.filter(user=self.request.user.pk)
+        """Метод для вывода клиентов только текущего пользователя"""
+        return super().get_queryset().filter(user=self.request.user)
 
 
 class CustomerCreateView(LoginRequiredMixin, generic.CreateView):
@@ -34,18 +36,17 @@ class CustomerCreateView(LoginRequiredMixin, generic.CreateView):
             instance.user = self.request.user
             try:
                 instance.save()
-            except IntegrityError:
+            except DatabaseError:
                 messages.warning(request=self.request,
                                  message=f"Пользователь с таким e-mail уже существует")
                 return redirect(reverse_lazy('customer:create'))
             messages.success(request=self.request,
                              message=f'{instance.email} успешно добавлен')
             return redirect(self.success_url)
-
         return super().form_valid(form)
 
 
-class CustomerUpdateView(LoginRequiredMixin, generic.UpdateView):
+class CustomerUpdateView(LoginRequiredMixin, OwnerPermissionsMixin, generic.UpdateView):
     """Контроллер редактирования клиента"""
     model = Customer
     form_class = CustomerForm
@@ -57,22 +58,29 @@ class CustomerUpdateView(LoginRequiredMixin, generic.UpdateView):
             instance = form.save(commit=False)
             try:
                 instance.save()
-            except IntegrityError:
+            except DatabaseError:
                 messages.warning(request=self.request,
                                  message=f"Пользователь с таким e-mail уже существует")
-                return redirect(reverse_lazy('customer:create'))
+                return redirect(reverse_lazy('customer:edit', args=[self.object.pk]))
             messages.success(request=self.request,
                              message=f'{instance.email} успешно обновлен')
             return redirect(self.success_url)
         return super().form_valid(form)
 
 
-class CustomerDeleteView(LoginRequiredMixin, generic.DeleteView):
+class CustomerDeleteView(LoginRequiredMixin, OwnerPermissionsMixin, generic.DeleteView):
     """Контроллер удаления клиента"""
     model = Customer
     success_url = reverse_lazy('customer:customers')
 
+    def get_success_url(self):
+        """Вывод сообщения при успешном удалении"""
+        messages.warning(request=self.request,
+                         message=f'Клиент "{self.object.email}" удален')
+        return super().get_success_url()
 
+
+@login_required
 def toggle_subscribe(request, pk):
     """Контроллер изменения состояния подписчика"""
     customer = get_object_or_404(Customer, pk=pk)

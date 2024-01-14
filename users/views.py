@@ -1,5 +1,6 @@
 import uuid
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -69,10 +70,12 @@ def activate(request, code):
         return HttpResponseRedirect(reverse_lazy('users:login'))
 
 
-class UserUpdateView(generic.UpdateView):
+class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
+    """Контроллер редактирования профиля пользователя"""
     model = User
     success_url = reverse_lazy('users:profile')
     form_class = UserProfileForm
 
     def get_object(self, queryset=None):
+        """Получение объекта текущего пользователя"""
         return self.request.user

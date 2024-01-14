@@ -1,24 +1,28 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import DatabaseError
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.datetime_safe import datetime
 from django.views import generic
 from customer.models import Customer
+from customer.permissions import OwnerPermissionsMixin
 from mailing.forms import MailingForm, MailForm
 from mailing.models import Mail, Mailing
 
 
-class MailView(generic.ListView):
+class MailView(LoginRequiredMixin, generic.ListView):
     """Вывод списка писем пользователя"""
     model = Mail
 
     def get_queryset(self):
-        """Метод для вывода писем текущего пользователя"""
-        return Mail.objects.filter(user=self.request.user.pk)
+        """Метод для вывода писем только текущего пользователя"""
+        return super().get_queryset().filter(user=self.request.user)
 
 
-class MailCreateView(generic.CreateView):
+class MailCreateView(LoginRequiredMixin, generic.CreateView):
     """Создание письма"""
     model = Mail
     form_class = MailForm
@@ -26,33 +30,55 @@ class MailCreateView(generic.CreateView):
 
     def form_valid(self, form):
         """Добавление текущего пользователя в форму"""
-        form.instance.user = self.request.user
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = self.request.user
+            try:
+                instance.save()
+            except DatabaseError:
+                messages.warning(request=self.request,
+                                 message=f"Ошибка сохранения письма")
+                return redirect(reverse_lazy('mailing:create'))
+            messages.success(request=self.request,
+                             message=f'Письмо "{instance.title}" успешно сохранено')
+            return redirect(self.success_url)
         return super().form_valid(form)
 
 
-class MailUpdateView(generic.UpdateView):
+class MailUpdateView(LoginRequiredMixin, OwnerPermissionsMixin, generic.UpdateView):
     """Редактирование письма"""
     model = Mail
     form_class = MailForm
     success_url = reverse_lazy('mailing:mails')
 
+    def get_success_url(self):
+        messages.success(request=self.request,
+                         message=f'Письмо "{self.object.title}" успешно обновлено')
+        return super().get_success_url()
 
-class MailDeleteView(generic.DeleteView):
+
+class MailDeleteView(LoginRequiredMixin, OwnerPermissionsMixin, generic.DeleteView):
     """Удаление письма"""
     model = Mail
     success_url = reverse_lazy('mailing:mails')
 
+    def get_success_url(self):
+        """Вывод сообщения при успешном удалении"""
+        messages.warning(request=self.request,
+                         message=f'Письмо "{self.object.title}" удалено')
+        return super().get_success_url()
 
-class MailingView(generic.ListView):
+
+class MailingView(LoginRequiredMixin, generic.ListView):
     """Вывод списка писем пользователя"""
     model = Mailing
 
     def get_queryset(self):
-        """Метод для вывода рассылок текущего пользователя"""
-        return Mailing.objects.filter(user=self.request.user.pk)
+        """Метод для вывода рассылок только текущего пользователя"""
+        return super().get_queryset().filter(user=self.request.user)
 
 
-class MailingCreateView(generic.CreateView):
+class MailingCreateView(LoginRequiredMixin, generic.CreateView):
     """Создание рассылки"""
     model = Mailing
     form_class = MailingForm
@@ -67,15 +93,29 @@ class MailingCreateView(generic.CreateView):
     def form_valid(self, form):
         """Добавление пользователя и списка активных
         клиентов пользователя в рассылку"""
-        form.instance.user = self.request.user
-        form.instance.next_date = form.cleaned_data.get('send_date')
-        form.save()
-        customers = Customer.objects.filter(user=self.request.user).filter(is_subscribe=True)
-        form.instance.customers.set(customers)
+        if form.is_valid():
+            customers = Customer.objects.filter(user=self.request.user).filter(is_subscribe=True)
+            if customers:
+                instance = form.save(commit=False)
+                instance.user = self.request.user
+                instance.next_date = form.cleaned_data.get('send_date')
+                try:
+                    instance.save()
+                    instance.customers.set(customers)
+                except DatabaseError:
+                    messages.warning(request=self.request,
+                                     message=f"Ошибка создания рассылки")
+                    return redirect(reverse_lazy('mailing:mailings'))
+                messages.success(request=self.request,
+                                 message=f'{instance.name} успешно создана')
+                return redirect(self.success_url)
+            messages.warning(request=self.request,
+                             message=f'Должен быть хотя бы 1 клиент для рассылки')
+            return redirect(reverse_lazy('customer:customers'))
         return super().form_valid(form)
 
 
-class MailingUpdateView(generic.UpdateView):
+class MailingUpdateView(LoginRequiredMixin, OwnerPermissionsMixin, generic.UpdateView):
     """Редактирование рассылки"""
     model = Mailing
     form_class = MailingForm
@@ -90,19 +130,40 @@ class MailingUpdateView(generic.UpdateView):
     def form_valid(self, form):
         """Добавление списка активных
         клиентов пользователя в рассылку"""
-        form.instance.next_date = form.cleaned_data.get('send_date')
-        form.save()
-        customers = Customer.objects.filter(user=self.request.user).filter(is_subscribe=True)
-        form.instance.customers.set(customers)
+        if form.is_valid():
+            customers = Customer.objects.filter(user=self.request.user).filter(is_subscribe=True)
+            if customers:
+                instance = form.save(commit=False)
+                instance.next_date = form.cleaned_data.get('send_date')
+                try:
+                    instance.save()
+                    instance.customers.set(customers)
+                except DatabaseError:
+                    messages.warning(request=self.request,
+                                     message=f"Ошибка обновления рассылки")
+                    return redirect(reverse_lazy('mailing:mailings'))
+                messages.success(request=self.request,
+                                 message=f'{instance.name} успешно обновлена')
+                return redirect(self.success_url)
+            messages.warning(request=self.request,
+                             message=f'Должен быть хотя бы 1 клиент для рассылки')
+            return redirect(reverse_lazy('customer:customers'))
         return super().form_valid(form)
 
 
-class MailingDeleteView(generic.DeleteView):
+class MailingDeleteView(LoginRequiredMixin, OwnerPermissionsMixin, generic.DeleteView):
     """Удаление рассылки"""
     model = Mailing
     success_url = reverse_lazy('mailing:mailings')
 
+    def get_success_url(self):
+        """Вывод сообщения при успешном удалении"""
+        messages.warning(request=self.request,
+                         message=f'Рассылка "{self.object.name}" удалена')
+        return super().get_success_url()
 
+
+@login_required
 def toggle_status(request, pk):
     """Контроллер изменения состояния рассылки"""
     mailing = get_object_or_404(Mailing, pk=pk)

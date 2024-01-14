@@ -3,10 +3,10 @@
 <div class="col-4 my-5">
 	<form method="post" enctype="multipart/form-data">
 		{% csrf_token %}
-        <div class="h3">Вы хотите удалить<br>{{ object.title }}?</div>
+        <div class="h3">Вы хотите удалить<br>{{ object.name }}?</div>
         <div class="mt-3 d-flex flex-row justify-content-between">
 			<div>
-				<a href="{% url 'mailing:mails' %}"
+				<a href="{% url 'mailing:mailings' %}"
 				   class="btn btn-outline-success">Отменить</a>
 			</div>
 			<div>

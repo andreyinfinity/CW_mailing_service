@@ -26,10 +26,10 @@
 		<tbody>
 		{% for object in object_list %}
 		<tr>
-			<td>{{ object.name }}</td>
-			<td>{{ object.send_date }}</td>
-			<td>{{ object.next_date }}</td>
-			<td>{{ object.period }}</td>
+			<td {% if object.status == "stopped" %} class="text-secondary" {% endif %}>{{ object.name }}</td>
+			<td {% if object.status == "stopped" %} class="text-secondary" {% endif %}>{{ object.send_date }}</td>
+			<td {% if object.status == "stopped" %} class="text-secondary" {% endif %}>{{ object.next_date }}</td>
+			<td {% if object.status == "stopped" %} class="text-secondary" {% endif %}>{{ object.period }}</td>
 			<td>{{ object.status }}</td>
 			<td class="text-end">
 				<div class="btn-group">
