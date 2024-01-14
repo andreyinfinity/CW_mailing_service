@@ -16,6 +16,9 @@
 					<a href="{% url 'mailing:mailings' %}" class="nav-link px-2">Рассылки</a>
 				</li>
 				{% endif %}
+				<li>
+					<a href="{% url 'blog:blog' %}" class="nav-link px-2">Блог</a>
+				</li>
 			</ul>
 			<div class="btn-group text-end">
 				{% if user.is_authenticated %}

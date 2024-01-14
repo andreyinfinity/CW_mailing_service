@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'home',
     'users',
     'customer',
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -136,16 +137,16 @@ STATICFILES_DIRS = (BASE_DIR / 'static',)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Users
-
+# Users authentication
 AUTH_USER_MODEL = 'users.User'
-LOGIN_REDIRECT_URL = 'home:index'
+LOGIN_REDIRECT_URL = 'users:profile'
 LOGOUT_REDIRECT_URL = 'users:login'
 LOGIN_URL = 'users:login'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# email config
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_TLS = False
