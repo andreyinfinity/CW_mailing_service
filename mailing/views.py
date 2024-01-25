@@ -78,7 +78,7 @@ class MailingView(LoginRequiredMixin, generic.ListView):
         """Метод для вывода рассылок только текущего пользователя и
         показа рассылок всех пользователей для модератора"""
         if self.request.user.has_perm('mailing.view_all_mailings'):
-            return super().get_queryset().all()
+            return super().get_queryset().all().exclude(status='completed').order_by('next_date')
         return super().get_queryset().filter(user=self.request.user)
 
 
@@ -193,7 +193,7 @@ def toggle_status(request, pk):
 
 
 class LogsView(LoginRequiredMixin, generic.ListView):
-    """Вывод списка писем пользователя"""
+    """Вывод списка логов рассылок пользователя"""
     model = Logs
 
     def get_queryset(self):

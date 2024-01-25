@@ -36,5 +36,5 @@ class IndexView(generic.TemplateView):
         context['total_mailings'] = total_mailings
         context['active_mailings'] = active_mailings
         context['unique_customers'] = unique_customers
-        context['random_posts'] = Post.objects.order_by('?')[:3]
+        context['random_posts'] = Post.objects.filter(is_published=True).order_by('?')[:3]
         return context
