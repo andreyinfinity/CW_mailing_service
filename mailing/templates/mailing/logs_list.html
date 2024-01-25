@@ -1,0 +1,30 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<div class="d-flex flex-row align-items-center justify-content-between py-3">
+    <div class="h1">
+		Отчет по рассылкам
+	</div>
+</div>
+<div class="row">
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Название рассылки</th>
+				<th scope="col">Время последнего отправления</th>
+				<th scope="col">Статус отправления</th>
+				<th scope="col">Ответ почтового сервера</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for object in object_list %}
+		<tr>
+			<td>{{ object.mailing }}</td>
+			<td>{{ object.last_attempt_time }}</td>
+			<td>{{ object.status }}</td>
+			<td>{{ object.error_message }}</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

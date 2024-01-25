@@ -2,7 +2,11 @@
 {% block content %}
 <div class="d-flex flex-row align-items-center justify-content-between py-3">
     <div class="h1">
+		{% if perms.mailing.view_all_mailings %}
+		Рассылки всех пользователей
+		{% else %}
 		Мои рассылки
+		{% endif %}
 	</div>
 	<div class="mb-3 mb-md-0 d-flex text-nowrap">
 		<a class="btn btn-outline-primary"
@@ -49,6 +53,8 @@
 						Повторить
 					</a>
 					{% endif %}
+					{% if perms.mailing.set_mailing_status and object.user != user %}
+					{% else %}
 					<a class="btn btn-sm btn-outline-primary"
 					   href="{% url 'mailing:edit_mailing' object.pk %}" title="Редактировать рассылку">
 						Редактировать
@@ -57,6 +63,7 @@
 					   href="{% url 'mailing:delete_mailing' object.pk %}" title="Удалить рассылку">
 						Удалить
 					</a>
+					{% endif %}
 				</div>
 			</td>
 		</tr>

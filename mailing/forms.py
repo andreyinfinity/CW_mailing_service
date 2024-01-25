@@ -15,7 +15,7 @@ class MailingForm(StyleFormMixin, forms.ModelForm):
         model = Mailing
         fields = ['name', 'send_date',
                   'period', 'mail']
-        widgets = {'send_date': forms.DateTimeInput(attrs={'type': 'datetime'})}
+        widgets = {'send_date': forms.DateInput(attrs={'type': 'date'})}
 
 
 class MailForm(StyleFormMixin, forms.ModelForm):

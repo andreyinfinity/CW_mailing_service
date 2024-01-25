@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import DatabaseError
 from django.shortcuts import get_object_or_404, redirect
@@ -10,7 +10,7 @@ from django.views import generic
 from customer.models import Customer
 from customer.permissions import OwnerPermissionsMixin
 from mailing.forms import MailingForm, MailForm
-from mailing.models import Mail, Mailing
+from mailing.models import Mail, Mailing, Logs
 
 
 class MailView(LoginRequiredMixin, generic.ListView):
@@ -74,7 +74,10 @@ class MailingView(LoginRequiredMixin, generic.ListView):
     model = Mailing
 
     def get_queryset(self):
-        """Метод для вывода рассылок только текущего пользователя"""
+        """Метод для вывода рассылок только текущего пользователя и
+        показа рассылок всех пользователей для модератора"""
+        if self.request.user.has_perm('mailing.view_all_mailings'):
+            return super().get_queryset().all()
         return super().get_queryset().filter(user=self.request.user)
 
 
@@ -167,20 +170,30 @@ class MailingDeleteView(LoginRequiredMixin, OwnerPermissionsMixin, generic.Delet
 def toggle_status(request, pk):
     """Контроллер изменения состояния рассылки"""
     mailing = get_object_or_404(Mailing, pk=pk)
-    if mailing.status in ['in progress', 'created']:
-        mailing.status = 'stopped'
-        messages.warning(request=request,
-                         message=f'Рассылка {mailing.name} прекращена')
-    elif mailing.status == 'stopped':
-        mailing.status = 'in progress'
-        if mailing.next_date < datetime.now(timezone.utc):
+    if request.user.has_perm('mailing.set_mailing_status') or request.user == mailing.user:
+        if mailing.status in ['in progress', 'created']:
+            mailing.status = 'stopped'
+            messages.warning(request=request,
+                             message=f'Рассылка {mailing.name} прекращена')
+        elif mailing.status == 'stopped':
+            mailing.status = 'in progress'
+            if mailing.next_date < datetime.now(timezone.utc):
+                mailing.next_date = datetime.now(timezone.utc)
+            messages.success(request=request,
+                             message=f'Рассылка {mailing.name} продолжит свою работу')
+        elif mailing.status == 'completed':
+            mailing.status = 'created'
             mailing.next_date = datetime.now(timezone.utc)
-        messages.success(request=request,
-                         message=f'Рассылка {mailing.name} продолжит свою работу')
-    elif mailing.status == 'completed':
-        mailing.status = 'created'
-        mailing.next_date = datetime.now(timezone.utc)
-        messages.success(request=request,
-                         message=f'Рассылка {mailing.name} будет разослана повторно')
-    mailing.save()
+            messages.success(request=request,
+                             message=f'Рассылка {mailing.name} будет разослана повторно')
+        mailing.save()
     return redirect(reverse_lazy('mailing:mailings'))
+
+
+class LogsView(LoginRequiredMixin, generic.ListView):
+    """Вывод списка писем пользователя"""
+    model = Logs
+
+    def get_queryset(self):
+        """Метод для вывода логов только текущего пользователя"""
+        return super().get_queryset().filter(user=self.request.user)

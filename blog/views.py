@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.http import Http404
 from django.views import generic
 from blog.models import Post
@@ -17,8 +18,10 @@ class PostDetailView(generic.DetailView):
     model = Post
 
     def get_object(self, queryset=None):
-        """Запрет на показ неопубликованной статьи"""
-        self.object = super().get_object(queryset)
-        if not self.object.is_published:
+        """Запрет на показ неопубликованной статьи и счетчик просмотров"""
+        post = super().get_object(queryset)
+        if not post.is_published:
             raise Http404
-        return self.object
+        post.viewed += 1
+        post.save()
+        return post
