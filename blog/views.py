@@ -1,4 +1,3 @@
-from django.db.models import F
 from django.http import Http404
 from django.views import generic
 from blog.models import Post

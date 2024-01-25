@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import DatabaseError
+from django.db.models import F
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -105,6 +106,7 @@ class MailingCreateView(LoginRequiredMixin, generic.CreateView):
                 try:
                     instance.save()
                     instance.customers.set(customers)
+                    customers.update(mailing_count=F('mailing_count') + 1)
                 except DatabaseError:
                     messages.warning(request=self.request,
                                      message=f"Ошибка создания рассылки")

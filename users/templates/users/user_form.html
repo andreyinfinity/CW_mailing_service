@@ -47,9 +47,9 @@
 		{% for group in request.user.groups.all %}
 		<h4>{{ group.name }}</h4>
 		{% endfor %}
-		<div><h5>Полномочия:</h5></div>
 		<div>
 			{% if perms.users.view_all_users %}
+			<h5>Полномочия:</h5>
 			<a class="btn btn-outline-primary w-100"
 			   href="{% url 'users:users' %}"
 			   title="Управлять пользователями">
