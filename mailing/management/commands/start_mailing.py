@@ -56,16 +56,17 @@ class Command(BaseCommand):
             email = EmailMessage(subject=mail_subject, body=message, to=to_email, from_email=EMAIL_HOST_USER)
             email.send()
             status = 'success'
-            error_message = ''
+            error_message = 'Успешно отправлено'
         except smtplib.SMTPException as error:
             status = 'error'
             error_message = str(error)
         finally:
             # Логирование рассылки
             Logs.objects.create(
-                user=mailing.user,
+                user_pk=mailing.user.pk,
                 last_attempt_time=current_time,
                 status=status,
-                mailing=mailing,
+                mailing_pk=mailing.pk,
+                mailing_name=mailing.name,
                 error_message=error_message
             ).save()

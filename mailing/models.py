@@ -62,15 +62,16 @@ class Logs(models.Model):
     """Статистика рассылки"""
     last_attempt_time = models.DateTimeField(verbose_name='Последняя отправка рассылки', auto_now=True)
     status = models.CharField(max_length=20, verbose_name='Статус отправки рассылки')
-    mailing = models.ForeignKey(Mailing, verbose_name='рассылка', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, verbose_name='пользователь', on_delete=models.CASCADE)
+    mailing_pk = models.IntegerField(verbose_name='id рассылки')
+    mailing_name = models.CharField(max_length=50, verbose_name='название рассылки', **NULLABLE)
+    user_pk = models.IntegerField(verbose_name='id пользователя')
     error_message = models.TextField(verbose_name='Сообщение об ошибке', **NULLABLE)
 
     def __str__(self):
         return (f'{self.last_attempt_time} '
                 f'{self.status} '
-                f'{self.mailing} '
-                f'{self.user} '
+                f'{self.mailing_pk} '
+                f'{self.user_pk} '
                 f'{self.error_message}')
 
     class Meta:

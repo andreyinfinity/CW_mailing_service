@@ -198,4 +198,4 @@ class LogsView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         """Метод для вывода логов только текущего пользователя"""
-        return super().get_queryset().filter(user=self.request.user)
+        return super().get_queryset().filter(user_pk=self.request.user.pk)

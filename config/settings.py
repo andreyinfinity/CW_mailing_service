@@ -158,7 +158,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Cron jobs
 CRONJOBS = [
-    ('* * * * *', 'mailing.cron.my_scheduled_job')
+    ('* * * * *', 'mailing.cron.scheduled_mailing')
 ]
 
 CACHE_ENABLED = True
