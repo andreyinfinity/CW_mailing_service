@@ -1,0 +1,21 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-6 offset-sm-3">
+		<form method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			<div class="h3 text-center">Вы хотите удалить<br>{{ object.email }}?</div>
+			<div class="mt-3 d-flex flex-row justify-content-between">
+				<div>
+					<a href="{% url 'customer:customers' %}"
+					   class="btn btn-outline-success">Отменить</a>
+				</div>
+				<div>
+					<button class="btn btn-outline-danger" type="submit">Удалить</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock %}

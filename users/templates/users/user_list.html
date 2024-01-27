@@ -1,0 +1,50 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<div class="d-flex flex-row align-items-center justify-content-between py-3">
+    <div class="h1">
+		Пользователи сервиса
+	</div>
+</div>
+<div class="row">
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Имя Фамилия</th>
+				<th scope="col">e-mail</th>
+				<th scope="col">Дата регистрации</th>
+				{% if perms.users.set_user_active %}
+				<th scope="col" class="text-end">Управление</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+		{% for object in object_list %}
+		<tr>
+			<td {% if not object.is_active %} class="text-secondary" {% endif %}>
+				{{ object.first_name|default_if_none:"" }} {{ object.last_name|default_if_none:"" }}
+			</td>
+			<td {% if not object.is_active %} class="text-secondary" {% endif %}>
+				{{ object.email }}
+			</td>
+			<td {% if not object.is_active %} class="text-secondary" {% endif %}>
+				{{ object.date_joined }}
+			</td>
+			{% if perms.users.set_user_active %}
+			<td class="text-end">
+				<div class="btn-group">
+					{% if object.is_active %}
+					<a href="{% url 'users:toggle_active' object.pk %}"
+					   class="btn btn-sm btn-outline-primary">Блокировать</a>
+					{% else %}
+					<a href="{% url 'users:toggle_active' object.pk %}"
+					   class="btn btn-sm btn-outline-secondary">Восстановить</a>
+					{% endif %}
+				</div>
+			</td>
+			{% endif %}
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

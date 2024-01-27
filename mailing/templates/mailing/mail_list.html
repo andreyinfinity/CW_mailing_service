@@ -1,0 +1,45 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<div class="d-flex flex-row align-items-center justify-content-between py-3">
+    <div class="h1">
+		Мои письма
+	</div>
+	<div class="mb-3 mb-md-0 d-flex text-nowrap">
+		<a class="btn btn-outline-primary"
+		   href="{% url 'mailing:create' %}" title="Создать новое письмо">
+			Создать письмо
+		</a>
+	</div>
+</div>
+<div class="row">
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Заголовок</th>
+				<th scope="col">Сообщение</th>
+				<th scope="col" class="text-end">Управление</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for object in object_list %}
+		<tr>
+			<td>{{ object.title|slice:":25" }}</td>
+			<td>{{ object.body|slice:":80" }}</td>
+			<td class="text-end">
+				<div class="btn-group">
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:edit' object.pk %}" title="Редактировать письмо">
+						Редактировать
+					</a>
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:delete' object.pk %}" title="Удалить письмо">
+						Удалить
+					</a>
+				</div>
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

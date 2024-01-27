@@ -1,0 +1,39 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-6 offset-sm-3">
+        <h1 class='text-center'>Вход</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group mb-3 form-floating">
+					{{ field }}
+					{{ field.label_tag }}
+					<div class="form-text">
+						{{ field.help_text }}
+					</div>
+					{% if field.errors %}
+					<div class="alert alert-danger mt-1" role="alert">
+						{% for error in field.errors %}
+							{{ error }}
+						{% endfor %}
+					</div>
+					{% endif %}
+                 </div>
+            {% endfor %}
+
+            <input type="submit" value="Войти" class="btn btn-success mt-4">
+        </form>
+        <p class="mt-2">
+            У вас еще нет аккаунта?
+            <a href="{% url 'users:registration' %}">Перейдите к регистрации</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

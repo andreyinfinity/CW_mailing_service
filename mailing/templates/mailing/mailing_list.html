@@ -1,0 +1,74 @@
+{% extends 'home/base.html' %}
+{% block content %}
+<div class="d-flex flex-row align-items-center justify-content-between py-3">
+    <div class="h1">
+		{% if perms.mailing.view_all_mailings %}
+		Рассылки всех пользователей
+		{% else %}
+		Мои рассылки
+		{% endif %}
+	</div>
+	<div class="mb-3 mb-md-0 d-flex text-nowrap">
+		<a class="btn btn-outline-primary"
+		   href="{% url 'mailing:create_mailing' %}" title="Добавить новую рассылку">
+			Добавить рассылку
+		</a>
+	</div>
+</div>
+<div class="row">
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Название</th>
+				<th scope="col">Начало рассылки</th>
+				<th scope="col">Следующее отправление</th>
+				<th scope="col">Периодичность</th>
+				<th scope="col">Статус</th>
+				<th scope="col" class="text-end">Управление</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for object in object_list %}
+		<tr>
+			<td {% if object.status == "stopped" %} class="text-secondary" {% endif %}>{{ object.name }}</td>
+			<td {% if object.status == "stopped" %} class="text-secondary" {% endif %}>{{ object.send_date }}</td>
+			<td {% if object.status == "stopped" %} class="text-secondary" {% endif %}>{{ object.next_date }}</td>
+			<td {% if object.status == "stopped" %} class="text-secondary" {% endif %}>{{ object.period }}</td>
+			<td>{{ object.status }}</td>
+			<td class="text-end">
+				<div class="btn-group">
+					{% if object.status == 'in progress' or object.status == 'created' %}
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:toggle_status' object.pk %}" title="Редактировать рассылку">
+						Остановить
+					</a>
+					{% elif object.status == 'stopped' %}
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:toggle_status' object.pk %}" title="Редактировать рассылку">
+						Возобновить
+					</a>
+					{% elif object.status == 'completed' %}
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:toggle_status' object.pk %}" title="Редактировать рассылку">
+						Повторить
+					</a>
+					{% endif %}
+					{% if perms.mailing.set_mailing_status and object.user != user %}
+					{% else %}
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:edit_mailing' object.pk %}" title="Редактировать рассылку">
+						Редактировать
+					</a>
+					<a class="btn btn-sm btn-outline-primary"
+					   href="{% url 'mailing:delete_mailing' object.pk %}" title="Удалить рассылку">
+						Удалить
+					</a>
+					{% endif %}
+				</div>
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

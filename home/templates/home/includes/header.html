@@ -1,0 +1,47 @@
+<header class="bg-primary-subtle sticky-top">
+	<nav class="container">
+		<div class="d-flex flex-wrap align-items-center justify-content-between py-3">
+			<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<li>
+					<a href="{% url 'home:index' %}" class="nav-link px-2">Главная</a>
+				</li>
+				{% if user.is_authenticated %}
+				<li>
+					<a href="{% url 'customer:customers' %}" class="nav-link px-2">Клиенты</a>
+				</li>
+				<li>
+					<a href="{% url 'mailing:mails' %}" class="nav-link px-2">Письма</a>
+				</li>
+				<li>
+					<a href="{% url 'mailing:mailings' %}" class="nav-link px-2">Рассылки</a>
+				</li>
+				<li>
+					<a href="{% url 'mailing:logs' %}" class="nav-link px-2">Отчеты</a>
+				</li>
+				{% endif %}
+				<li>
+					<a href="{% url 'blog:blog' %}" class="nav-link px-2">Блог</a>
+				</li>
+			</ul>
+			<div class="btn-group text-end">
+				{% if user.is_authenticated %}
+				<button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+					Профиль
+				</button>
+				<ul class="dropdown-menu dropdown-menu-end">
+					<li><a href="{% url 'users:profile' %}" class="dropdown-item">Профиль</a></li>
+					<li><a href="{% url 'users:logout' %}" class="dropdown-item">Выйти</a></li>
+				</ul>
+				{% else %}
+				<button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+					Войти
+				</button>
+				<ul class="dropdown-menu dropdown-menu-end">
+					<li><a href="{% url 'users:registration' %}" class="dropdown-item">Регистрация</a></li>
+					<li><a href="{% url 'users:login' %}" class="dropdown-item">Войти</a></li>
+				</ul>
+				{% endif %}
+			</div>
+		</div>
+	</nav>
+</header>
