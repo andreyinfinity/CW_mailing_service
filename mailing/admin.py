@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from mailing.models import Mail, Mailing
+from mailing.models import Mail, Mailing, Logs
 
 
 @admin.register(Mail)
@@ -14,3 +14,9 @@ class MailingAdmin(admin.ModelAdmin):
     list_display = ['name', 'user']
     list_filter = ['user']
     ordering = ['user', '-create_date']
+
+
+@admin.register(Logs)
+class LogsAdmin(admin.ModelAdmin):
+    list_display = ['pk','user_pk', 'last_attempt_time', 'status', 'mailing_name', 'error_message']
+    list_filter = ['user_pk']

@@ -60,8 +60,8 @@ class Mailing(models.Model):
 
 class Logs(models.Model):
     """Статистика рассылки"""
-    last_attempt_time = models.DateTimeField(verbose_name='Последняя отправка рассылки', auto_now=True)
-    status = models.CharField(max_length=20, verbose_name='Статус отправки рассылки')
+    last_attempt_time = models.DateTimeField(verbose_name='Последняя отправка', auto_now=True)
+    status = models.CharField(max_length=20, verbose_name='Статус отправки')
     mailing_pk = models.IntegerField(verbose_name='id рассылки')
     mailing_name = models.CharField(max_length=50, verbose_name='название рассылки', **NULLABLE)
     user_pk = models.IntegerField(verbose_name='id пользователя')
